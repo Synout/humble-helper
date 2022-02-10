@@ -11,7 +11,6 @@ Libraries that we need to import:
 '''
 
 import os
-from numpy import true_divide
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.service import Service

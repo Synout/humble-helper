@@ -11,6 +11,7 @@ Libraries that we need to import:
 '''
 
 import os
+from numpy import true_divide
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.service import Service
@@ -185,6 +186,7 @@ If bundle exists in spreadsheet, it will simply ignore, if new bundle pops up, i
 ''' 
 bundle_tiers = {}
 def humble_curr():
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager(log_level=1).install()), options=options)
     driver.get('https://www.humblebundle.com/bundles?hmb_source=navbar')
     bundle_elements = driver.find_elements(By.CLASS_NAME, 'tile-holder')
     main_window = driver.current_window_handle
@@ -466,9 +468,12 @@ if __name__ == "__main__":
     
 
 
-
-    humble_login(options)
-    if opt in '1':
+    if opt in '5':
+        humble_curr()
+        print(bundle_tiers)
+    elif opt not in '5':
+        humble_login(options)
+    elif opt in '1':
         humble_prep(opt)
         print(redeem_list)
         pd.DataFrame(redeem_list).to_csv(f'[{datetime.today().date()}] Humble Bundle Key info.csv')
@@ -482,14 +487,11 @@ if __name__ == "__main__":
         p_list = humble_prep(opt)
 
         pd.DataFrame(purchase_list, columns=purchase_hdr).to_csv(f'[{datetime.today().date()}] Humble Bundle Purchase info.csv')
-    elif opt in '5':
-        humble_curr()
-        print(bundle_tiers)
 
 
 
     print(f'\nScript Finished.\n######################\nSummary:\n~Total purchases: {len(purchase_list)} items @ ${sum([float(k[-2][3:]) for k in purchase_list if not k[-2].__contains__("-")])}\n~Total Keys: {len(redeem_list)}, {len(redeem_list)-len(set([k[0] for k in redeem_list]))} duplicate(s)\n')
 
-# 
+
 
 

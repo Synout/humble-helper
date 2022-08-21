@@ -11,7 +11,6 @@ Libraries that we need to import:
 '''
 
 import os
-from numpy import true_divide
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.service import Service
@@ -28,7 +27,7 @@ from datetime import datetime
 import pandas as pd
 import pickle
 import json
-from rich import print
+from rich import print as rprint
 
 
 url_purchases = 'https://www.humblebundle.com/login?goto=%2Fhome%2Fpurchases&qs=hmb_source%3Dnavbar'
@@ -37,6 +36,10 @@ purchase_list = []
 purchase_hdr =  ['Title','Date of Purchase', 'Price', 'Link']
 
 #Defining functions here
+
+# making a simple timestamp function
+def stamp(str):
+    return rprint(f'[{datetime.now().time().replace(microsecond=0)}]',f' {str}')
 
 #Humble Account Handler
 '''
@@ -203,6 +206,7 @@ def humble_curr():
     while len(driver.window_handles) >= 1:   
         for tab in driver.window_handles:
             driver.switch_to.window(tab)
+            stamp(f'Current bundle: {driver.title}')
             bundle_title  =  driver.find_element(By.CLASS_NAME, 'bundle-logo').get_attribute('alt')
             bundle_tiers[f'{bundle_title}'] = {}
             tier_filters = driver.find_elements(By.CLASS_NAME, 'js-tier-filter')
@@ -351,7 +355,8 @@ def humble_prep(opt):
                 return redeem_list
             except NoSuchElementException:       
                 break
-        
+        elif opt == '4':
+            pass
         
             
     
@@ -469,8 +474,9 @@ if __name__ == "__main__":
 
 
     if opt in '5':
-        humble_curr()
-        print(bundle_tiers)
+        tiers = humble_curr()
+        df = pd.DataFrame(tiers)
+        df.to_csv(f'[{datetime.today().date()}]Humble_Bundles.csv')
     elif opt not in '5':
         humble_login(options)
     elif opt in '1':
